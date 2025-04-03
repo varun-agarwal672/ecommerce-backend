@@ -1,0 +1,52 @@
+ Approach 2: Asynchronous Order & Payment Processing (For Scalability)
+For large-scale e-commerce platforms:
+
+Orders are queued in Kafka/RabbitMQ.
+Payments are processed asynchronously via a separate service.
+🛠 Steps
+User Places Order → Insert order into DB (PENDING).
+Send Event to Kafka/RabbitMQ (order.created event).
+Payment Microservice Listens → Processes payment.
+Update Order Status (after payment confirmation).
+🔹 Example Implementation
+1️⃣ Order Service (Spring Boot)
+java
+Copy
+Edit
+@Service
+public class OrderService {
+    @Autowired private OrderRepository orderRepository;
+    @Autowired private KafkaTemplate<String, OrderEvent> kafkaTemplate;
+
+    public Order createOrder(Long userId) {
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setStatus(OrderStatus.PENDING);
+        order.setOrderDate(ZonedDateTime.now());
+
+        order = orderRepository.save(order);
+
+        // Publish event to Kafka for payment processing
+        kafkaTemplate.send("order_created", new OrderEvent(order.getId(), userId));
+
+        return order;
+    }
+}
+2️⃣ Payment Service (Listening to Kafka)
+java
+Copy
+Edit
+@KafkaListener(topics = "order_created")
+public void processPayment(OrderEvent orderEvent) {
+    boolean paymentSuccess = paymentGatewayService.processPayment(orderEvent.getUserId(), orderEvent.getOrderId());
+
+    Payment payment = new Payment();
+    payment.setOrder(orderRepository.findById(orderEvent.getOrderId()).get());
+    payment.setStatus(paymentSuccess ? "SUCCESS" : "FAILED");
+    payment.setPaymentDate(ZonedDateTime.now());
+
+    paymentRepository.save(payment);
+
+    // Publish event for order update
+    kafkaTemplate.send("payment_processed", new PaymentEvent(orderEvent.getOrderId(), paymentSuccess));
+}
