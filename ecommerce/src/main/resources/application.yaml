@@ -2,20 +2,32 @@ spring:
   application:
     name: Ecommerce
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/ecommerce_db?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&serverTimezone=UTC
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/ecommerce_db?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false&serverTimezone=UTC
+#    username: root
+#    password: 123456
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    hibernate:
+#      ddl-auto: update   # Options: validate | update | create | create-drop
+#    show-sql: true       # Enables SQL logging
+#    properties:
+#      hibernate:
+#        format_sql: true
 
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: update   # Options: validate | update | create | create-drop
-    show-sql: true       # Enables SQL logging
-    properties:
+  spring:
+    datasource:
+      url: jdbc:postgresql://localhost:5432/ecommerce_db
+      username: root
+      password: 123456
+      driver-class-name: org.postgresql.Driver
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
-        format_sql: true
+        ddl-auto: update
+      show-sql: true
 
   jackson:
     default-property-inclusion: non_empty
