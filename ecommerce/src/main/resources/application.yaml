@@ -28,6 +28,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  login:
+    redirect-uri: ${GOOGLE_LOGIN_REDIRECT_URI}
+
   jackson:
     default-property-inclusion: non_empty
     property-naming-strategy: SNAKE_CASE

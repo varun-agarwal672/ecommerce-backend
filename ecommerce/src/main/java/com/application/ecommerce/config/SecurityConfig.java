@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -48,6 +49,8 @@ public class SecurityConfig {
     private final CustomUserDetailsServiceImpl userDetailsService;
     private final CustomOidcUserServiceImpl oidcUserService;
     private final UserRepository userRepository;
+    @Value(value = "${spring.login.redirect-uri}")
+    private final String redirectUri;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -141,7 +144,7 @@ public class SecurityConfig {
         response.addCookie(cookie);
 
         // Redirect to frontend home page after successful login
-        response.sendRedirect("http://localhost:3000?oauth=true");
+        response.sendRedirect(redirectUri);
     }
 
     @Bean
@@ -160,7 +163,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));  // You can set specific origins
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:*","https://ecommerce-frontend-ruddy-ten.vercel.app"));  // You can set specific origins
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);  // Allow cookies to be included in CORS requests
