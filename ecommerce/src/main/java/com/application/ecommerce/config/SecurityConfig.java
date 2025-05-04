@@ -50,7 +50,7 @@ public class SecurityConfig {
     private final CustomOidcUserServiceImpl oidcUserService;
     private final UserRepository userRepository;
     @Value(value = "${spring.login.redirect-uri}")
-    private final String redirectUri;
+    private String redirectUri;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
